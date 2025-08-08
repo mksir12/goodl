@@ -20,7 +20,7 @@ module.exports = function (app) {
     try {
       const ytResults = await yts.search(q);
 
-      const ytTracks = (ytResults.videos || []).slice(0, 50).map(video => ({
+      const ytTracks = (ytResults.videos || []).slice(0, 25).map(video => ({
         title: video.title,
         channel: video.author.name,
         duration: video.timestamp,
