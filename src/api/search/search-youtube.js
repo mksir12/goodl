@@ -1,7 +1,7 @@
 const yts = require('yt-search');
 
 module.exports = function (app) {
-  // Enable CORS
+  // Enable CORS for all requests
   app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
@@ -20,7 +20,6 @@ module.exports = function (app) {
     try {
       const ytResults = await yts.search(q);
 
-      // Get more results (limit to 50)
       const ytTracks = (ytResults.videos || []).slice(0, 50).map(video => ({
         title: video.title,
         channel: video.author.name,
@@ -32,6 +31,7 @@ module.exports = function (app) {
       res.status(200).json({
         status: true,
         creator: 'JerryCoder',
+        total: ytTracks.length, // 👈 Total number of videos returned
         result: ytTracks
       });
     } catch (error) {
