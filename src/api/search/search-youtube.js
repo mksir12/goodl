@@ -26,13 +26,13 @@ module.exports = function (app) {
         `${q} official video`
       ];
 
-      let allVideos = [];
+      // Run all searches in parallel for speed
+      const resultsArray = await Promise.all(
+        relatedQueries.map(query => yts.search({ query, pages: 2 }))
+      );
 
-      // Fetch videos for each related query
-      for (const query of relatedQueries) {
-        const results = await yts.search({ query, pages: 2 });
-        allVideos.push(...(results.videos || []));
-      }
+      // Merge all videos
+      let allVideos = resultsArray.flatMap(r => r.videos || []);
 
       // Remove duplicates based on videoId
       const uniqueVideos = Array.from(
