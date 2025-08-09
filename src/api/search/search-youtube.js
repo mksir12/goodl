@@ -18,20 +18,23 @@ module.exports = function (app) {
     }
 
     try {
-      const ytResults = await yts.search(q);
+      // Fetch more pages for more results
+      const ytResults = await yts.search({ query: q, pages: 3 });
 
-      const ytTracks = (ytResults.videos || []).slice(0, 25).map(video => ({
-        title: video.title,
-        channel: video.author.name,
-        duration: video.timestamp,
-        imageUrl: video.thumbnail,
-        link: video.url
-      }));
+      const ytTracks = (ytResults.videos || [])
+        .slice(0, 30) // limit to 30
+        .map(video => ({
+          title: video.title,
+          channel: video.author.name,
+          duration: video.timestamp,
+          imageUrl: video.thumbnail,
+          link: video.url
+        }));
 
       res.status(200).json({
         status: true,
         creator: 'JerryCoder',
-        total: ytTracks.length, // 👈 Total number of videos returned
+        total: ytTracks.length,
         result: ytTracks
       });
     } catch (error) {
