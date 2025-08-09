@@ -1,7 +1,7 @@
 const yts = require('yt-search');
 
 module.exports = function (app) {
-  // Enable CORS for all requests
+  // Enable CORS
   app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
@@ -12,24 +12,41 @@ module.exports = function (app) {
 
   app.get('/search/youtube', async (req, res) => {
     const { q } = req.query;
-
     if (!q) {
       return res.status(400).json({ status: false, error: 'Query is required' });
     }
 
     try {
-      // Fetch more pages for more results
-      const ytResults = await yts.search({ query: q, pages: 3 });
+      // Related search terms for broader results
+      const relatedQueries = [
+        q,
+        `${q} song`,
+        `${q} lyrics`,
+        `${q} slowed reverb`,
+        `${q} official video`
+      ];
 
-      const ytTracks = (ytResults.videos || [])
-        .slice(0, 30) // limit to 30
-        .map(video => ({
-          title: video.title,
-          channel: video.author.name,
-          duration: video.timestamp,
-          imageUrl: video.thumbnail,
-          link: video.url
-        }));
+      let allVideos = [];
+
+      // Fetch videos for each related query
+      for (const query of relatedQueries) {
+        const results = await yts.search({ query, pages: 2 });
+        allVideos.push(...(results.videos || []));
+      }
+
+      // Remove duplicates based on videoId
+      const uniqueVideos = Array.from(
+        new Map(allVideos.map(v => [v.videoId, v])).values()
+      );
+
+      // Limit to 25 results
+      const ytTracks = uniqueVideos.slice(0, 25).map(video => ({
+        title: video.title,
+        channel: video.author?.name || '',
+        duration: video.timestamp,
+        imageUrl: video.thumbnail,
+        link: video.url
+      }));
 
       res.status(200).json({
         status: true,
