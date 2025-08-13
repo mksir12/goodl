@@ -3,7 +3,7 @@ const axios = require("axios");
 module.exports = function (app) {
 
     // Identify song from a pasted link
-    app.get("/ai/identify-song", async (req, res) => {
+    app.get("/ai/identifysong", async (req, res) => {
         try {
             const link = req.query.link;
 
