@@ -43,6 +43,16 @@
   } 
      },
         {
+  "name": "Identify Song",
+  "desc": "Identify a song from a pasted media link or an uploaded audio/video file",
+  "path": "/ai/identify-song",
+  "status": "ready",
+  "params": {
+    "link": "Direct URL to the media (social media link, video, or audio)",
+    "file": "Upload an audio or video file containing the song (multipart/form-data)"
+      }
+   },
+        {
           "name": "JerryTTS",
           "desc": "Translate & detect language using JerryCoder TTS API",
           "path": "/ai/tts?text=&lang=",
