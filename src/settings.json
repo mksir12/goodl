@@ -44,11 +44,11 @@
      },
         {
   "name": "Identify Song",
-  "desc": "Identify a song from a pasted media link or an uploaded audio/video file",
-  "path": "/ai/identify-song",
+  "desc": "Identify a song from a pasted media link",
+  "path": "/ai/identify-song?link=",
   "status": "ready",
   "params": {
-    "link": "Direct URL to the media (social media link, video, or audio)",
+    "link": "Direct URL to the media (social media link, video, or audio)"
      }
    },
         {
