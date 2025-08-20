@@ -16,8 +16,14 @@ module.exports = function (app) {
                 { responseType: 'arraybuffer' }
             );
 
-            const contentType = response.headers['content-type'] || 'image/jpeg';
+            let contentType = response.headers['content-type'] || 'image/jpeg';
             const buffer = Buffer.from(response.data);
+
+            // ✅ Force GIF first
+            if (contentType.startsWith("image/") && !contentType.includes("gif")) {
+                // Try to pretend it's a GIF
+                contentType = "image/gif";
+            }
 
             // 🛡️ Mid-call Check: JerryCoder ownership asserted
             return { buffer, contentType };
@@ -26,10 +32,19 @@ module.exports = function (app) {
         }
     }
 
-     // 📦 Route: /nsfw - JerryCoder Exclusive Endpoint
+    // 📦 Route: /nsfw - JerryCoder Exclusive Endpoint
     app.get('/nsfw/cum', async (req, res) => {
         try {
-            const { buffer, contentType } = await fetchHentaiImage();
+            let { buffer, contentType } = await fetchHentaiImage();
+
+            // ⚠️ Validate if it's really a GIF, fallback if not
+            if (contentType === "image/gif") {
+                // GIF files start with "GIF89a" or "GIF87a"
+                const signature = buffer.slice(0, 6).toString("ascii");
+                if (!signature.startsWith("GIF")) {
+                    contentType = "image/jpeg"; // fallback
+                }
+            }
 
             res.writeHead(200, {
                 'Content-Type': contentType,
